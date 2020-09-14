@@ -9,32 +9,34 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
  * @author laszlop
  */
-public class WordStoring implements WordStore {
+public class WordCollector  {
 
     private final List<URL> urlList;
-    private final Set<String> skipTags;
+    private final Set<String> skipTags; // ???
     private final Set<Character> separators;
-    private final Map<String, Integer> wordFrequency = new HashMap<>();
-    private final static Logger LOGGER = Logger.getLogger(WordStoring.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(WordCollector.class.getName());
+    private final WordStore sorter;
 
-    public WordStoring(List<URL> urlList) {
+    public WordCollector(List<URL> urlList, WordStore sorter) {
+        LOGGER.setLevel(Level.WARNING); // DELETE for Logger info
         this.urlList = urlList;
         this.skipTags = new HashSet<>(Arrays.asList("head", "style")); // texts between these tags are ignored
-        this.separators = new HashSet<>(Arrays.asList(' ','"','(', ')','*', '<', '.', ':', '?', '!', ';', '-', '–', '=', '{', '}'));
+        this.separators = new HashSet<>(Arrays.asList('_',' ', ',','/','"','(', ')','*', '<', '.', ':', '?', '!', ';', '-', '–', '=',
+                '{', '}'));
+        this.sorter = sorter;
     }
 
     public void processURLs() throws IOException {
@@ -60,7 +62,7 @@ public class WordStoring implements WordStore {
             char character = (char) value;
             if (character == '<') {
                 if (!skipTags.contains(tag)) {
-                    store(word.toString().toLowerCase());
+                    sorter.store(word.toString().toLowerCase());
                 }
                 String nextTagString = buildTag(reader);
                 if (('/' + tag).equals(nextTagString)) {
@@ -72,7 +74,7 @@ public class WordStoring implements WordStore {
             }
             if (separators.contains(character) || Character.isWhitespace(character)) {
                 if (!skipTags.contains(tag)) {
-                    store(word.toString().toLowerCase());
+                    sorter.store(word.toString().toLowerCase());
                 }
                 word.setLength(0);
                 continue;
@@ -107,43 +109,12 @@ public class WordStoring implements WordStore {
         return tag.toString().toLowerCase();
     }
 
-    @Override
-    public void store(String word) {
-        if (word.length() > 1 && !skipTags.contains(word)) {
-            wordFrequency.put(word, wordFrequency.getOrDefault(word, 0) + 1);
-        }
-    }
-
-    @Override
-    public void addSkipWord(String word) {
-        skipTags.add(word);
-        LOGGER.info(word + " (as tag to skip) added.");
-    }
-
-    @Override
     public void print() {
-        System.out.println("Full frequency list: " + sortedWordFreq());
+        sorter.print();
     }
-
-    @Override
+    
     public void print(int n) {
-        List<Map.Entry<String, Integer>> sortedList = sortedWordFreq();
-        System.out.print("The " + n + " most used words:");
-        for (int i = 0; i < n; i++) {
-            System.out.print(" " + sortedList.get(i));
-        }
-        System.out.println("");
-    }
-
-    private List<Map.Entry<String, Integer>> sortedWordFreq() {
-        List<Map.Entry<String, Integer>> sortedList = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : wordFrequency.entrySet()) {
-            sortedList.add(entry);
-            WordFreqComparator wordFreqComp = new WordFreqComparator();
-            Collections.sort(sortedList, wordFreqComp);
-            Collections.reverse(sortedList);
-        }
-        return sortedList;
+        sorter.print(n);
     }
 
 }

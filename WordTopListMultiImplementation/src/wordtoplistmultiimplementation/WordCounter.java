@@ -32,30 +32,40 @@ public class WordCounter {
 
     private final List<URL> urlList;
     private final static int LENGTH_OF_TOPLIST = 10;
+    private final WordStore sorter; 
 
-    public WordCounter(List<URL> urlList) {
+    public WordCounter(List<URL> urlList, WordStore sorter) {
         this.urlList = urlList;
+        this.sorter = sorter;
     }
     
     public void printTopList() throws IOException {
-        WordStoring wordStoring = new WordStoring(urlList);
-        wordStoring.addSkipWord("an");
-        wordStoring.addSkipWord("and");
-        wordStoring.addSkipWord("by");
-        wordStoring.addSkipWord("for");
-        wordStoring.addSkipWord("if");
-        wordStoring.addSkipWord("in");
-        wordStoring.addSkipWord("is");
-        wordStoring.addSkipWord("of");
-        wordStoring.addSkipWord("on");
-        wordStoring.addSkipWord("that");
-        wordStoring.addSkipWord("the");
-        wordStoring.addSkipWord("to");
-        wordStoring.addSkipWord("with");
+        sorter.addSkipWord("an");
+        sorter.addSkipWord("and");
+        sorter.addSkipWord("as");
+        sorter.addSkipWord("by");
+        sorter.addSkipWord("for");
+        sorter.addSkipWord("if");
+        sorter.addSkipWord("in");
+        sorter.addSkipWord("is");
+        sorter.addSkipWord("of");
+        sorter.addSkipWord("on");
+        sorter.addSkipWord("that");
+        sorter.addSkipWord("the");
+        sorter.addSkipWord("to");
+        sorter.addSkipWord("with");  
+        WordCollector wordCollector = new WordCollector(urlList, sorter);     
+        wordCollector.processURLs();
+        wordCollector.print();        
+        wordCollector.print(LENGTH_OF_TOPLIST);
+ 
         
-        wordStoring.processURLs();
-        wordStoring.print();        
-        wordStoring.print(LENGTH_OF_TOPLIST);    
+        
+        
+        
+        
+        
+        
     }
 
 
