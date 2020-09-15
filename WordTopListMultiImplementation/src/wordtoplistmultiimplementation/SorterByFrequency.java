@@ -6,7 +6,6 @@
 package wordtoplistmultiimplementation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,54 +14,68 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
+ * This class can be used to create sorting by frequency
  * @author laszlop
  */
 public class SorterByFrequency implements WordStore {
 
     private final Map<String, Integer> wordFrequency = new HashMap<>();
-    private final Set<String> skipTags;
-
-    public SorterByFrequency() {
-        this.skipTags = new HashSet<>(Arrays.asList("head", "style")); // texts between these tags are ignored
-    }
+    private final Set<String> skipWords = new HashSet<>();
+    
+    /**
+     * This method add the got word to the Set which contains the words to be ignored.
+     * @param word 
+     */
 
     @Override
     public void store(String word) {
-        if (word.length() > 1 && !skipTags.contains(word)) {
+        if (word.length() > 1 && !skipWords.contains(word)) {
             wordFrequency.put(word, wordFrequency.getOrDefault(word, 0) + 1);
         }
     }
+    
+    /**
+     * This method add the got word to the Set which contains the words to be ignored.
+     * @param word 
+     */
 
     @Override
     public void addSkipWord(String word) {
-        skipTags.add(word);
+        skipWords.add(word);
     }
+    
+     /**
+     * Prints the full list of the found words.
+     */
 
     @Override
     public void print() {
-        System.out.println("Full frequency list: " + sortedWordFreq());
+        System.out.println("Full frequency list: " + sortedWordsByFreq());
     }
+    
+     /**
+     * Prints the n-sized toplist of the found words.
+     * @param n 
+     */
 
     @Override
     public void print(int n) {
-        List<Map.Entry<String, Integer>> sortedList = sortedWordFreq();
+        List<Map.Entry<String, Integer>> sortedList = sortedWordsByFreq();
         System.out.print("The " + n + " most used words:");
         for (int i = 0; i < n; i++) {
             System.out.print(" " + sortedList.get(i));
         }
         System.out.println("");
     }
-
-    private List<Map.Entry<String, Integer>> sortedWordFreq() {
-        List<Map.Entry<String, Integer>> sortedList = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : wordFrequency.entrySet()) {
-            sortedList.add(entry);
-            WordFreqComparator wordFreqComp = new WordFreqComparator();
-            Collections.sort(sortedList, wordFreqComp);
-            Collections.reverse(sortedList);
-        }
+    
+     /**
+     * Creates the sorted List of the entries of the Map.
+     * @return 
+     */
+    
+    private List<Map.Entry<String, Integer>> sortedWordsByFreq() {
+        ArrayList<Map.Entry<String, Integer>> sortedList = new ArrayList<>(wordFrequency.entrySet());
+        Collections.sort(sortedList, new WordFreqComparator());
         return sortedList;
     }
-
 }

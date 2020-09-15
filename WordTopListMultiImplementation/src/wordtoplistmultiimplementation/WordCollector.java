@@ -15,45 +15,63 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ *This class manages the processing of the got URLList, collects the words of the contents in a Map.
  * @author laszlop
  */
-public class WordCollector  {
+public class WordCollector {
 
     private final List<URL> urlList;
-    private final Set<String> skipTags; // ???
+    private final Set<String> skipTags;
     private final Set<Character> separators;
+    private final Map<String, Integer> wordFrequency = new HashMap<>();
+    private final WordStore storer;
     private final static Logger LOGGER = Logger.getLogger(WordCollector.class.getName());
-    private final WordStore sorter;
 
-    public WordCollector(List<URL> urlList, WordStore sorter) {
-        LOGGER.setLevel(Level.WARNING); // DELETE for Logger info
+    public WordCollector(List<URL> urlList, WordStore storer) {
         this.urlList = urlList;
         this.skipTags = new HashSet<>(Arrays.asList("head", "style")); // texts between these tags are ignored
-        this.separators = new HashSet<>(Arrays.asList('_',' ', ',','/','"','(', ')','*', '<', '.', ':', '?', '!', ';', '-', '–', '=',
-                '{', '}'));
-        this.sorter = sorter;
+        this.separators = new HashSet<>(Arrays.asList(' ', '"', '(', ')', '*', '<', '.', ':', '?', '!', ';', '-', '–', '=', '{', '}',
+                '/', '_', ',', '[', ']'));
+        this.storer = storer;
     }
 
+    /**
+     * Loops on the URLlist, and starts the processing for each URL.
+     *
+     * @throws IOException
+     */
     public void processURLs() throws IOException {
         for (int i = 0; i < urlList.size(); i++) {
             URL url = urlList.get(i);
             processContent(url);
         }
     }
+    
+    /**
+     * Opens a reader for the got URL, finds the opening tag, and starts the substantive work by calling the eatTag method.
+     * @param url
+     * @throws IOException 
+     */
 
     public void processContent(URL url) throws IOException {
         LOGGER.info("Processing of the homepage " + url.toString() + " started");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-        String openingTag = findOpeningTag(reader);
-        LOGGER.info(openingTag + " (as opening tag) identified.");
-        eatTag(openingTag, reader);
-        reader.close();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            String openingTag = findOpeningTag(reader);
+            LOGGER.info(openingTag + " (as opening tag) identified.");
+            eatTag(openingTag, reader);
+        }
     }
+    
+    /**
+     * Reads the content of the URL, the found words will be put into a Map, found opening tags start the method recursive,
+     * found closing tags close the (sub)method.
+     * @param tag
+     * @param reader
+     * @throws IOException 
+     */
 
     private void eatTag(String tag, BufferedReader reader) throws IOException {
         int value;
@@ -62,7 +80,7 @@ public class WordCollector  {
             char character = (char) value;
             if (character == '<') {
                 if (!skipTags.contains(tag)) {
-                    sorter.store(word.toString().toLowerCase());
+                    storer.store(word.toString().toLowerCase());
                 }
                 String nextTagString = buildTag(reader);
                 if (('/' + tag).equals(nextTagString)) {
@@ -74,7 +92,7 @@ public class WordCollector  {
             }
             if (separators.contains(character) || Character.isWhitespace(character)) {
                 if (!skipTags.contains(tag)) {
-                    sorter.store(word.toString().toLowerCase());
+                    storer.store(word.toString().toLowerCase());
                 }
                 word.setLength(0);
                 continue;
@@ -82,6 +100,13 @@ public class WordCollector  {
             word.append(character);
         }
     }
+    
+    /**
+     * This method finds the first opeening tag, this tag is needed to start the substantive eatTag method.
+     * @param reader
+     * @return opening tag
+     * @throws IOException 
+     */
 
     private String findOpeningTag(BufferedReader reader) throws IOException {
         int value;
@@ -95,6 +120,13 @@ public class WordCollector  {
         }
         return openingTag;
     }
+    
+    /**
+     * This method builds up the tag from the read characters.
+     * @param reader
+     * @return tag
+     * @throws IOException 
+     */
 
     private String buildTag(BufferedReader reader) throws IOException {
         StringBuilder tag = new StringBuilder();
@@ -108,13 +140,30 @@ public class WordCollector  {
         }
         return tag.toString().toLowerCase();
     }
+       
+    /**
+     * This method add the got word to the Set which contains the words to be ignored.
+     * @param word 
+     */
 
-    public void print() {
-        sorter.print();
+    public void addSkipWord(String word) {
+        storer.addSkipWord(word);
     }
     
-    public void print(int n) {
-        sorter.print(n);
-    }
+    /**
+     * Prints the full list of the found words.
+     */
 
+    public void print() {
+        storer.print();
+    }
+    
+    /**
+     * Prints the n-sized toplist of the found words.
+     * @param n 
+     */
+
+    public void print(int n) {
+        storer.print(n);
+    }
 }
