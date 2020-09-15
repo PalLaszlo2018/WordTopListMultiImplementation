@@ -19,6 +19,9 @@ import java.util.Set;
  */
 public class SorterByLength implements WordStore {
 
+    // TODO LP: I think this is not an optimal solution to store a String and its length in a hashmap
+    // since the String itself contains the lenght information...so I think it is enough to store the different words once
+    // please try to choose a more appropriate collection type, if you have a good idea skype me! :)
     private final Map<String, Integer> wordLength = new HashMap<>();
     private final Set<String> skipWords = new HashSet<>();
     

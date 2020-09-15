@@ -26,6 +26,7 @@ public class WordCollector {
     private final List<URL> urlList;
     private final Set<String> skipTags;
     private final Set<Character> separators;
+    // TODO LP: please don't leave an unused variable in the code! Netbeans also underlines these kind of variables 
     private final Map<String, Integer> wordFrequency = new HashMap<>();
     private final WordStore storer;
     private final static Logger LOGGER = Logger.getLogger(WordCollector.class.getName());

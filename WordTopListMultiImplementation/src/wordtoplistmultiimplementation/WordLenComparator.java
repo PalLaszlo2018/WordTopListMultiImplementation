@@ -14,6 +14,7 @@ import java.util.Map;
  * @author laszlop
  */
 public class WordLenComparator implements Comparator<Map.Entry<String, Integer>> {
+    // TODO LP: you don't use this comparator at all :)
 
     @Override
     public int compare(Map.Entry<String, Integer> wordLen1, Map.Entry<String, Integer> wordLen2) {
