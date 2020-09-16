@@ -15,7 +15,7 @@ public class WordLenComparator implements Comparator<String> {
 
     @Override
     public int compare(String word1, String word2) {
-        return Integer.compare(word2.length(), word1.length()); // TODO LP: don't reinvent the wheel :)
+        return Integer.compare(word2.length(), word1.length());
     }
     
 }
