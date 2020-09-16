@@ -17,15 +17,7 @@ public class WordVowelFreqComparator implements Comparator<Map.Entry<String, Dou
 
     @Override
     public int compare(Map.Entry<String, Double> wordFreq1, Map.Entry<String, Double> wordFreq2) {
-        long freq1 = Math.round(1_000_000 * wordFreq1.getValue());
-        long freq2 = Math.round(1_000_000 * wordFreq2.getValue());
-        if (freq1 < freq2) {
-            return 1;
-        } else if (freq1 > freq2) {
-            return -1;
-        } else {
-            return wordFreq1.getKey().compareTo(wordFreq2.getKey());
-        }
+        return Double.compare(wordFreq2.getValue(), wordFreq1.getValue()); // TODO LP: don't reinvent the wheel :)
     }
     
 }

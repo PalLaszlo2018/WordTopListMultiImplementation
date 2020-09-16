@@ -32,8 +32,9 @@ public class SorterByVowelFreq implements WordStore {
 
     @Override
     public void store(String word) {
+        // TODO LP: if a word is already in the hashmap then you don't need to calculate again the vowel frequency value
         if (word.length() > 1 && !skipWords.contains(word)) {
-            int vowelCount = 0;
+            int vowelCount = 0; // TODO LP: I would put this vowelFreq calculation into a separate method
             for (int i = 0; i < word.length(); i++) {
                 if (vowels.contains(word.charAt(i))) {
                     vowelCount++;
