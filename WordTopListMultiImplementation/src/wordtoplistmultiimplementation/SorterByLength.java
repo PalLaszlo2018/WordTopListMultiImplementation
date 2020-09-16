@@ -7,10 +7,8 @@ package wordtoplistmultiimplementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,26 +17,23 @@ import java.util.Set;
  */
 public class SorterByLength implements WordStore {
 
-    // TODO LP: I think this is not an optimal solution to store a String and its length in a hashmap
-    // since the String itself contains the lenght information...so I think it is enough to store the different words once
-    // please try to choose a more appropriate collection type, if you have a good idea skype me! :)
-    private final Map<String, Integer> wordLength = new HashMap<>();
+    private final Set<String> words = new HashSet<>();
     private final Set<String> skipWords = new HashSet<>();
     
     /**
-     * This method add the got word to the Set which contains the words to be ignored.
+     * This method adds the got word to the Set which contains the found valid words.
      * @param word 
      */
 
     @Override
     public void store(String word) {
-        if (word.length() > 1 && !skipWords.contains(word) && !wordLength.containsKey(word)) {
-            wordLength.put(word, word.length());
+        if (word.length() > 1 && !skipWords.contains(word)) {
+            words.add(word);
         }
     }
     
     /**
-     * This method add the got word to the Set which contains the words to be ignored.
+     * This method adds the got word to the Set which contains the words to be ignored.
      * @param word 
      */
 
@@ -57,13 +52,13 @@ public class SorterByLength implements WordStore {
     }
     
     /**
-     * Prints the n-sized toplist of the found words.
+     * Prints the n-sized top-list of the found words.
      * @param n 
      */
 
     @Override
     public void print(int n) {
-        List<Map.Entry<String, Integer>> sortedList = sortedWordsByLength();
+        List<String> sortedList = sortedWordsByLength();
         System.out.print("The " + n + " longest words:");
         for (int i = 0; i < n; i++) {
             System.out.print(" " + sortedList.get(i));
@@ -73,12 +68,12 @@ public class SorterByLength implements WordStore {
     
     /**
      * Creates the sorted List of the entries of the Map.
-     * @return 
+     * @return the sorted List
      */
 
-    private List<Map.Entry<String, Integer>> sortedWordsByLength() {
-        ArrayList<Map.Entry<String, Integer>> sortedList = new ArrayList<>(wordLength.entrySet());
-        Collections.sort(sortedList, new WordFreqComparator());
+    private List<String> sortedWordsByLength() {
+        ArrayList<String> sortedList = new ArrayList<>(words);
+        Collections.sort(sortedList, new WordLenComparator());
         return sortedList;
     }
 

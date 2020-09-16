@@ -13,14 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This application allows you to give some URL-s, and it will collect the X most used words of the content of the given homepages.
- * You can add skipwords, which will not be collected. You can define the value of X as well.
+ * This application allows you to give some URL-s, and it will collect the X most important words of the content of the homepages.
+ * You can define various instances of sorter classes (all of them implement the WordStore interface) to define the importance.
+ * You can add words to skip, which will not be collected. You can define the value of X as well.
  * @author laszlop
  */
 public class WordTopListMultiImplementation {
 
     /**
      * @param args the command line arguments
+     * @throws java.net.MalformedURLException, IOException
      */
     public static void main(String[] args) throws MalformedURLException, IOException {
         System.out.println("WordTopListRecursive application started.");
@@ -57,26 +59,18 @@ public class WordTopListMultiImplementation {
         WordStore wordCollectorLen = new SorterByLength();     
         WordCollector wordStoringLen = new WordCollector(urlList, wordCollectorLen);
         wordStoringLen.addSkipWord("an");
-        wordStoringLen.addSkipWord("and");
-        wordStoringLen.addSkipWord("by");
-        wordStoringLen.addSkipWord("for");
-        wordStoringLen.addSkipWord("if");
-        wordStoringLen.addSkipWord("in");
-        wordStoringLen.addSkipWord("is");
-        wordStoringLen.addSkipWord("it");
-        wordStoringLen.addSkipWord("of");
-        wordStoringLen.addSkipWord("on");
-        wordStoringLen.addSkipWord("that");
-        wordStoringLen.addSkipWord("the");
-        wordStoringLen.addSkipWord("to");
-        wordStoringLen.addSkipWord("with");
         
         wordStoringLen.processURLs();
         wordStoringLen.print(10);
         
+        System.out.println("\n");
         
-        
-        
+        WordStore wordCollectorVowel = new SorterByVowelFreq();     
+        WordCollector wordStoringVowel = new WordCollector(urlList, wordCollectorVowel);
+        wordStoringVowel.addSkipWord("an");
+         
+        wordStoringVowel.processURLs();
+        wordStoringVowel.print(10);
     }
 
 }

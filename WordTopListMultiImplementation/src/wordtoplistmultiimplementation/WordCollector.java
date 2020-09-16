@@ -10,10 +10,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -26,8 +24,6 @@ public class WordCollector {
     private final List<URL> urlList;
     private final Set<String> skipTags;
     private final Set<Character> separators;
-    // TODO LP: please don't leave an unused variable in the code! Netbeans also underlines these kind of variables 
-    private final Map<String, Integer> wordFrequency = new HashMap<>();
     private final WordStore storer;
     private final static Logger LOGGER = Logger.getLogger(WordCollector.class.getName());
 
@@ -67,7 +63,7 @@ public class WordCollector {
     }
     
     /**
-     * Reads the content of the URL, the found words will be put into a Map, found opening tags start the method recursive,
+     * Reads the content of the URL, the found words will be put into a Map, found opening tags start the method recursive way,
      * found closing tags close the (sub)method.
      * @param tag
      * @param reader
@@ -103,7 +99,7 @@ public class WordCollector {
     }
     
     /**
-     * This method finds the first opeening tag, this tag is needed to start the substantive eatTag method.
+     * This method finds the first opening tag, this tag is needed to start the substantive eatTag method.
      * @param reader
      * @return opening tag
      * @throws IOException 
@@ -160,7 +156,7 @@ public class WordCollector {
     }
     
     /**
-     * Prints the n-sized toplist of the found words.
+     * Prints the n-sized top-list of the found words.
      * @param n 
      */
 
